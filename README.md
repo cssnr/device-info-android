@@ -52,7 +52,7 @@ Device Information Android Application; with a COPY button...
 [![Get on GitHub](https://raw.githubusercontent.com/smashedr/repo-images/refs/heads/master/android/get80/github.png)](https://github.com/cssnr/device-info-android/releases/latest/download/app-release.apk)
 [![Get on Obtainium](https://raw.githubusercontent.com/smashedr/repo-images/refs/heads/master/android/get80/obtainium.png)](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/cssnr/device-info-android)
 
-**Supports Android 8 (API 26) 2017+.**
+**Supports Android 8 (API 26) 2017+**
 
 [![Latest Release](https://img.shields.io/github/v/release/cssnr/device-info-android?style=for-the-badge&logo=github&label=latest%20release&color=34A853)](https://github.com/cssnr/device-info-android/releases/latest)
 [![Latest Pre-Release](https://img.shields.io/github/v/release/cssnr/device-info-android?style=for-the-badge&logo=github&include_prereleases&label=pre-release&color=blue)](https://github.com/cssnr/device-info-android/releases)
@@ -84,31 +84,28 @@ should take you to the settings area to allow installation if not already enable
 _The GitHub APK has been registered with Google's [Android developer verification](https://developer.android.com/developer-verification)._
 
 ```
-TODO: ADD KEY
+CD:0D:D8:D8:87:EA:85:BE:60:37:2D:A7:4C:CF:71:AB:F5:43:47:36:67:85:7A:6F:0A:00:87:54:5B:DF:46:5E
 ```
 
 [_How to Verify an APK Signature_](https://developer.android.com/tools/apksigner#usage-verify)
 
 ## Getting Started
 
-The app is ready to use as soon as it is installed — no account, login or setup required.
-
-1. [Install](#Install) and open the app.
-2. Tap the button to create your first list, for example "Groceries".
-3. Open the list and start typing in the search bar.
-4. Tap a suggestion to add an item to your list, or press Enter to add any custom text.
-5. Single-tap an item to mark it as done; tap the eye icon to hide or show completed items.
-6. Swipe an item to the right to reveal Edit and Delete actions.
+The app is ready to use as soon as it is installed.
 
 ## Features
 
-- Copy Button
+- Device Information
+- Copy Button(s) (lots of them)
 
 ### Planned
 
-- Maybe Add Stuff?
+- Add Items
+- Add Categories
+- Reorganize Items & Categories
+- Let me know what you want to see...
 
-[![Request Feature](https://img.shields.io/badge/request_feature-brightgreen?style=for-the-badge&logo=rocket&logoColor=white)](https://github.com/cssnr/device-info-android/issues/new)
+[![Request Feature](https://img.shields.io/badge/request_feature-brightgreen?style=for-the-badge&logo=rocket&logoColor=white)](https://github.com/cssnr/device-info-android/issues/new?template=1-feature.yaml)
 [![Report Issue](https://img.shields.io/badge/report_issue-red?style=for-the-badge&logo=southwestairlines&logoColor=white)](https://github.com/cssnr/device-info-android/issues)
 
 ## Support
@@ -117,10 +114,10 @@ If you run into any issues or need help getting started, please do one of the fo
 
 - Report an Issue: <https://github.com/cssnr/device-info-android/issues>
 - Q&A Discussion: <https://github.com/cssnr/device-info-android/discussions/categories/q-a>
-- Request a Feature: <https://github.com/cssnr/device-info-android/issues/new>
+- Request a Feature: <https://github.com/cssnr/device-info-android/issues/new?template=1-feature.yaml>
 - Chat with us on Discord: <https://discord.gg/wXy6m2X8wY>
 
-[![Features](https://img.shields.io/badge/features-brightgreen?style=for-the-badge&logo=rocket&logoColor=white)](https://github.com/cssnr/device-info-android/issues/new)
+[![Features](https://img.shields.io/badge/features-brightgreen?style=for-the-badge&logo=rocket&logoColor=white)](https://github.com/cssnr/device-info-android/issues/new?template=1-feature.yaml)
 [![Issues](https://img.shields.io/badge/issues-red?style=for-the-badge&logo=southwestairlines&logoColor=white)](https://github.com/cssnr/device-info-android/issues)
 [![Discussions](https://img.shields.io/badge/discussions-blue?style=for-the-badge&logo=livechat&logoColor=white)](https://github.com/cssnr/device-info-android/discussions)
 [![Discord](https://img.shields.io/badge/discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/wXy6m2X8wY)
@@ -252,10 +249,10 @@ You can also star this project on GitHub and support other related projects:
 - [Django Files Android](https://github.com/django-files/android-client?tab=readme-ov-file#readme)
 - [Zipline Android](https://github.com/cssnr/zipline-android?tab=readme-ov-file#readme)
 - [Remote Wallpaper Android](https://github.com/cssnr/remote-wallpaper-android?tab=readme-ov-file#readme)
+- [NOAA Weather Android](https://github.com/cssnr/noaa-weather-android?tab=readme-ov-file#readme)
 - [ParKing Android](https://github.com/cssnr/parking-android?tab=readme-ov-file#readme)
 - [Todo List Android](https://github.com/cssnr/todolist-android?tab=readme-ov-file#readme)
 - [Device Info Android](https://github.com/cssnr/device-info-android?tab=readme-ov-file#readme)
-- [NOAA Weather Android](https://github.com/cssnr/noaa-weather-android?tab=readme-ov-file#readme)
 - [Tibs3DPrints Android](https://github.com/cssnr/tibs3dprints-android?tab=readme-ov-file#readme)
 
 For a full list of current projects visit: [https://cssnr.github.io/](https://cssnr.github.io/)
