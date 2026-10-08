@@ -3,9 +3,11 @@ package org.cssnr.deviceinfo.data
 import android.app.LocaleManager
 import android.content.Context
 import android.content.pm.PackageManager
+import android.hardware.display.DisplayManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.view.Display
 import androidx.annotation.StringRes
 import androidx.core.net.toUri
 import org.cssnr.deviceinfo.R
@@ -83,11 +85,12 @@ data class InfoCategory(
  * process died. The UI resolves every label and every localized value during composition, where a
  * locale change reaches it.
  *
- * The three groups are cut by what a fact is about rather than by where the field lives in the
+ * The four groups are cut by what a fact is about rather than by where the field lives in the
  * framework, because the copy actions are per group and a report is only useful if selecting one
  * group selects one kind of thing. `Build` fields are therefore spread across `device` and `os`
  * rather than kept in a group of their own:
  * - `device` is the physical hardware: who made it, what board it is, what chip is in it.
+ * - `display` is the physical screen: its native resolution, density and refresh capabilities.
  * - `os` is the software build: the Android version, the build that identifies it, the runtime it
  *   runs on.
  * - `system` is everything the platform does rather than is: the boot chain, the Google components
@@ -100,6 +103,7 @@ object DeviceInfoCollector {
     fun collect(context: Context): List<InfoCategory> = listOf(
         osCategory(context),
         deviceCategory(),
+        displayCategory(context),
         systemCategory(context),
     )
 
@@ -210,6 +214,103 @@ object DeviceInfoCollector {
         },
     )
 
+    /**
+     * The physical screen, read off the default [Display] plus `DisplayMetrics`.
+     *
+     * `resolution` is the panel's native size from the active `Display.Mode`; `absolute_resolution`
+     * is the app-visible size from `DisplayMetrics`, which is smaller once decor, cutouts and
+     * compatibility scaling are subtracted. Brightness, brightness mode and orientation are
+     * deliberately left out: they are momentary state rather than device facts, and this snapshot
+     * is collected once per process.
+     *
+     * The [Display] comes from `DisplayManager.getDisplay(Display.DEFAULT_DISPLAY)` rather than a
+     * window, so an application context is enough and there is nothing an Activity would add. When
+     * the display is absent the mode rows are omitted and the `DisplayMetrics` rows still show.
+     */
+    private fun displayCategory(context: Context): InfoCategory = InfoCategory(
+        id = "display",
+        titleRes = R.string.info_group_display,
+        items = buildList {
+            val metrics = context.resources.displayMetrics
+            val display = primaryDisplay(context)
+            val mode = display?.mode
+
+            if (mode != null) {
+                item(
+                    "display.resolution",
+                    R.string.info_display_resolution,
+                    "${mode.physicalWidth} x ${mode.physicalHeight}",
+                )
+            }
+            item(
+                "display.absolute_resolution",
+                R.string.info_display_absolute_resolution,
+                "${metrics.widthPixels} x ${metrics.heightPixels}",
+            )
+            if (mode != null) {
+                item(
+                    "display.aspect_ratio",
+                    R.string.info_display_aspect_ratio,
+                    aspectRatio(mode.physicalWidth, mode.physicalHeight),
+                )
+                item(
+                    "display.screen_size",
+                    R.string.info_display_screen_size,
+                    screenSizeInches(mode.physicalWidth, mode.physicalHeight, metrics.xdpi),
+                )
+            }
+            item(
+                "display.screen_density",
+                R.string.info_display_screen_density,
+                metrics.xdpi.takeIf { it > 0f }?.let { "${it.toInt()} ppi" },
+            )
+            item(
+                "display.density_dpi",
+                R.string.info_display_density_dpi,
+                "${metrics.densityDpi} dpi",
+            )
+            item(
+                "display.density",
+                R.string.info_display_density,
+                metrics.density.toString(),
+            )
+            if (mode != null) {
+                item(
+                    "display.refresh_rate",
+                    R.string.info_display_refresh_rate,
+                    "${Math.round(mode.refreshRate)} Hz",
+                )
+            }
+            val supportedRates = display?.supportedModes
+                ?.map { Math.round(it.refreshRate) }
+                ?.distinct()
+                ?.sorted()
+                ?.joinToString(separator = " Hz, ", postfix = " Hz") { it.toString() }
+            item(
+                "display.supported_refresh_rates",
+                R.string.info_display_supported_refresh_rates,
+                supportedRates,
+            )
+            if (display != null) {
+                add(
+                    InfoItem(
+                        "display.hdr",
+                        R.string.info_display_hdr,
+                        InfoValue.Resource(if (display.isHdr) R.string.info_yes else R.string.info_no),
+                    ),
+                )
+                item("display.hdr_types", R.string.info_display_hdr_types, hdrTypes(display))
+                add(
+                    InfoItem(
+                        "display.wide_color_gamut",
+                        R.string.info_display_wide_color_gamut,
+                        InfoValue.Resource(if (display.isWideColorGamut) R.string.info_yes else R.string.info_no),
+                    ),
+                )
+            }
+        },
+    )
+
     private fun systemCategory(context: Context): InfoCategory = InfoCategory(
         id = "system",
         titleRes = R.string.info_group_system,
@@ -270,6 +371,50 @@ object DeviceInfoCollector {
 
     private fun String.isKnown(): Boolean =
         isNotBlank() && !equals(Build.UNKNOWN, ignoreCase = true)
+
+    private fun primaryDisplay(context: Context): Display? =
+        context.getSystemService(DisplayManager::class.java)?.getDisplay(Display.DEFAULT_DISPLAY)
+
+    /** Reduced `width:height` pair, e.g. 1080x2400 becomes 9:20. */
+    private fun aspectRatio(width: Int, height: Int): String? {
+        if (width <= 0 || height <= 0) return null
+        fun gcd(a: Int, b: Int): Int = if (b == 0) a else gcd(b, a % b)
+        val divisor = gcd(width, height)
+        if (divisor <= 0) return null
+        return "${width / divisor}:${height / divisor}"
+    }
+
+    /** Diagonal panel size from the native resolution and the physical x density. */
+    private fun screenSizeInches(width: Int, height: Int, xdpi: Float): String? {
+        if (width <= 0 || height <= 0 || xdpi <= 0f) return null
+        val w = width / xdpi.toDouble()
+        val h = height / xdpi.toDouble()
+        return String.format(Locale.US, "%.2f inches", Math.sqrt(w * w + h * h))
+    }
+
+    /**
+     * Human names for the display's HDR types, or null when it reports none.
+     *
+     * Matched on `HdrCapabilities` constants rather than raw ints. An unrecognized type is
+     * dropped; a display advertising only those reads as having no known HDR.
+     *
+     * Still read off `HdrCapabilities` rather than `Mode.getSupportedHdrTypes()`: that
+     * replacement needs API 34 and this collector starts at 26.
+     */
+    @Suppress("DEPRECATION")
+    private fun hdrTypes(display: Display): String? {
+        val supported = display.hdrCapabilities?.supportedHdrTypes ?: IntArray(0)
+        val types = mutableListOf<String>()
+        for (type in supported) {
+            when (type) {
+                Display.HdrCapabilities.HDR_TYPE_DOLBY_VISION -> types.add("Dolby Vision")
+                Display.HdrCapabilities.HDR_TYPE_HDR10 -> types.add("HDR10")
+                Display.HdrCapabilities.HDR_TYPE_HLG -> types.add("Hybrid Log-Gamma")
+                Display.HdrCapabilities.HDR_TYPE_HDR10_PLUS -> types.add("HDR10+")
+            }
+        }
+        return types.takeIf { it.isNotEmpty() }?.joinToString()
+    }
 
     private fun property(key: String): String? = System.getProperty(key)
 
