@@ -64,6 +64,20 @@
     <string name="info_system_gsf_id">Google Services Framework ID</string>
     <string name="info_system_rooted">Rooted</string>
 
+    <string name="info_group_display">Display</string>
+    <string name="info_display_resolution">Resolution</string>
+    <string name="info_display_absolute_resolution">Absolute Resolution</string>
+    <string name="info_display_aspect_ratio">Aspect Ratio</string>
+    <string name="info_display_screen_size">Screen Size</string>
+    <string name="info_display_screen_density">Screen Density</string>
+    <string name="info_display_density_dpi">Density DPI</string>
+    <string name="info_display_density">Density</string>
+    <string name="info_display_refresh_rate">Refresh Rate</string>
+    <string name="info_display_supported_refresh_rates">Supported Refresh Rates</string>
+    <string name="info_display_hdr">HDR</string>
+    <string name="info_display_hdr_types">HDR Types</string>
+    <string name="info_display_wide_color_gamut">Wide Color Gamut</string>
+
     <string name="info_yes">Yes</string>
     <string name="info_no">No</string>
     <string name="info_unavailable">N/A</string>
