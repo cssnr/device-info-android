@@ -23,6 +23,7 @@ class SettingsRepository(private val context: Context) {
         val SEED_HUE = floatPreferencesKey("seed_hue")
         val COPY_KEY_AND_VALUE = booleanPreferencesKey("copy_key_and_value")
         const val CRASH_REPORTING = "acra.enable"
+        const val CRASH_DISABLE_COUNT = "ui_acra_disable_count"
     }
 
     @Suppress("DEPRECATION")
@@ -56,6 +57,17 @@ class SettingsRepository(private val context: Context) {
         awaitClose { acraPreferences.unregisterOnSharedPreferenceChangeListener(listener) }
     }
 
+    val crashDisableCount: Flow<Int> = callbackFlow {
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+            if (key == Keys.CRASH_DISABLE_COUNT) {
+                trySend(acraPreferences.getInt(Keys.CRASH_DISABLE_COUNT, 0))
+            }
+        }
+        acraPreferences.registerOnSharedPreferenceChangeListener(listener)
+        trySend(acraPreferences.getInt(Keys.CRASH_DISABLE_COUNT, 0))
+        awaitClose { acraPreferences.unregisterOnSharedPreferenceChangeListener(listener) }
+    }
+
     suspend fun setDynamicColor(enabled: Boolean) {
         context.settingsDataStore.edit { preferences ->
             preferences[Keys.DYNAMIC_COLOR] = enabled
@@ -78,8 +90,16 @@ class SettingsRepository(private val context: Context) {
         acraPreferences.edit().putBoolean(Keys.CRASH_REPORTING, enabled).apply()
     }
 
+    fun confirmCrashReportingDisable() {
+        acraPreferences.edit()
+            .putBoolean(Keys.CRASH_REPORTING, false)
+            .putInt(Keys.CRASH_DISABLE_COUNT, acraPreferences.getInt(Keys.CRASH_DISABLE_COUNT, 0) + 1)
+            .apply()
+    }
+
     companion object {
         // Hue of the Material 3 baseline purple (#6750A4) on the vivid (S=V=1) ramp.
         const val DEFAULT_SEED_HUE = 256.43f
+        const val MAX_CRASH_DISABLE_PROMPTS = 2
     }
 }
