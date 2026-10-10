@@ -15,6 +15,7 @@ data class SettingsState(
     val seedHue: Float = SettingsRepository.DEFAULT_SEED_HUE,
     val copyKeyAndValue: Boolean = true,
     val crashReporting: Boolean = true,
+    val crashDisableCount: Int = 0,
 )
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
@@ -26,12 +27,14 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         settingsRepository.seedHue,
         settingsRepository.copyKeyAndValue,
         settingsRepository.crashReporting,
-    ) { dynamicColor, seedHue, copyKeyAndValue, crashReporting ->
+        settingsRepository.crashDisableCount,
+    ) { dynamicColor, seedHue, copyKeyAndValue, crashReporting, crashDisableCount ->
         SettingsState(
             dynamicColor = dynamicColor,
             seedHue = seedHue,
             copyKeyAndValue = copyKeyAndValue,
             crashReporting = crashReporting,
+            crashDisableCount = crashDisableCount,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -60,6 +63,12 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     fun setCrashReporting(enabled: Boolean) {
         viewModelScope.launch {
             settingsRepository.setCrashReporting(enabled)
+        }
+    }
+
+    fun confirmCrashReportingDisable() {
+        viewModelScope.launch {
+            settingsRepository.confirmCrashReportingDisable()
         }
     }
 }
