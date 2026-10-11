@@ -195,6 +195,7 @@ fun SettingsScreen(
                             R.string.about_app_summary,
                             appName,
                             org.cssnr.deviceinfo.BuildConfig.VERSION_NAME,
+                            org.cssnr.deviceinfo.BuildConfig.VERSION_CODE,
                         ),
                         onClick = onAboutClick,
                     ),
